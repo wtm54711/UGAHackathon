@@ -15,36 +15,57 @@ export default function RequestsFeed() {
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const filteredSearch = useMemo(() => search.trim(), [search]);
 
+  async function load() {
+    setLoading(true);
+    setError(null);
+    const { data, error } = await fetchRequests({
+      search: filteredSearch,
+      category,
+      sort,
+    });
+
+    if (error) {
+      setError(error.message);
+      setRequests([]);
+    } else {
+      setRequests((data as RequestRow[]) || []);
+    }
+    setLoading(false);
+    setInitialLoading(false);
+  }
+
   useEffect(() => {
     let active = true;
 
-    async function load() {
-      setLoading(true);
-      setError(null);
-      const { data, error } = await fetchRequests({
-        search: filteredSearch,
-        category,
-        sort,
-      });
-
+    async function loadGuarded() {
       if (!active) return;
-
-      if (error) {
-        setError(error.message);
-        setRequests([]);
-      } else {
-        setRequests((data as RequestRow[]) || []);
-      }
-      setLoading(false);
+      await load();
     }
 
-    load();
+    loadGuarded();
+
+    const onFocus = () => loadGuarded();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") loadGuarded();
+    };
+
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    const interval = window.setInterval(() => {
+      loadGuarded();
+    }, 30000);
+
     return () => {
       active = false;
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.clearInterval(interval);
     };
   }, [filteredSearch, category, sort]);
 
@@ -86,9 +107,15 @@ export default function RequestsFeed() {
         >
           Create Request
         </Link>
+        <button
+          onClick={() => load()}
+          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700"
+        >
+          Refresh
+        </button>
       </div>
 
-      {loading && <LoadingSkeleton />}
+      {initialLoading && loading && <LoadingSkeleton />}
       {error && (
         <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
           {error}

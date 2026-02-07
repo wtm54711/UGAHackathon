@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import CategoryBadge from "@/components/CategoryBadge";
 import StatusPill from "@/components/StatusPill";
 import EmptyState from "@/components/EmptyState";
@@ -18,7 +18,9 @@ import {
 } from "@/lib/data/requests";
 import { createBrowserClient } from "@/lib/supabase/client";
 
-export default function RequestDetail({ id }: { id: string }) {
+export default function RequestDetail({ id }: { id?: string }) {
+  const params = useParams();
+  const resolvedId = id ?? (params?.id as string | undefined);
   const [request, setRequest] = useState<RequestRow | null>(null);
   const [comments, setComments] = useState<RequestComment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,10 +44,16 @@ export default function RequestDetail({ id }: { id: string }) {
     }
 
     async function loadRequest() {
+      if (!resolvedId) {
+        setError("Missing request id.");
+        setRequest(null);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       setError(null);
 
-      const { data, error } = await fetchRequestById(id);
+      const { data, error } = await fetchRequestById(resolvedId);
       if (!active) return;
 
       if (error) {
@@ -60,7 +68,7 @@ export default function RequestDetail({ id }: { id: string }) {
         setEditLocation(req.location ?? "");
       }
 
-      const commentsResult = await fetchRequestComments(id);
+      const commentsResult = await fetchRequestComments(resolvedId);
       if (!active) return;
 
       if (commentsResult.error) {
@@ -78,14 +86,14 @@ export default function RequestDetail({ id }: { id: string }) {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [resolvedId]);
 
   async function handleAddComment(e: React.FormEvent) {
     e.preventDefault();
-    if (!userId || !commentText.trim()) return;
+    if (!userId || !commentText.trim() || !resolvedId) return;
 
     const { error } = await addRequestComment({
-      request_id: id,
+      request_id: resolvedId,
       user_id: userId,
       body: commentText.trim(),
     });
@@ -96,7 +104,7 @@ export default function RequestDetail({ id }: { id: string }) {
     }
 
     setCommentText("");
-    const refreshed = await fetchRequestComments(id);
+    const refreshed = await fetchRequestComments(resolvedId);
     if (!refreshed.error) {
       setComments((refreshed.data as RequestComment[]) || []);
     }
@@ -149,7 +157,7 @@ export default function RequestDetail({ id }: { id: string }) {
     return (
       <EmptyState
         title="Request not found"
-        description="This request may have been removed or never existed."
+        description={`This request may have been removed or never existed. Request id: ${resolvedId ?? "missing"}`}
         action={
           <Link
             href="/requests"
@@ -162,7 +170,10 @@ export default function RequestDetail({ id }: { id: string }) {
     );
   }
 
-  const isOwner = userId === request.user_id;
+  const ownerId = request.user_id ?? null;
+  const isOwner = userId !== null && userId === ownerId;
+  const locationLabel = request.location ?? "Athens, GA";
+  const authorLabel = ownerId ?? "unknown";
 
   return (
     <div className="space-y-8">
@@ -172,7 +183,7 @@ export default function RequestDetail({ id }: { id: string }) {
             <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
               <CategoryBadge category={request.category} />
               <StatusPill status={request.status} />
-              <span>{request.location ?? "Athens, GA"}</span>
+              <span>{locationLabel}</span>
               <span>{new Date(request.created_at).toLocaleDateString()}</span>
             </div>
             <h1 className="text-2xl font-semibold text-slate-900">
@@ -180,7 +191,7 @@ export default function RequestDetail({ id }: { id: string }) {
             </h1>
           </div>
           <div className="text-xs text-slate-500">
-            Posted by {request.user_id}
+            Posted by {authorLabel}
           </div>
         </div>
 
@@ -312,9 +323,12 @@ export default function RequestDetail({ id }: { id: string }) {
       </div>
 
       {error && (
-        <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {error}
-        </p>
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p>{error}</p>
+          <p className="mt-1 text-xs text-rose-600">
+            Request id: {resolvedId ?? "missing"}
+          </p>
+        </div>
       )}
     </div>
   );

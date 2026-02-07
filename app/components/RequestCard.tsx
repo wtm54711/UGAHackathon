@@ -4,6 +4,14 @@ import StatusPill from "@/components/StatusPill";
 import { RequestRow } from "@/lib/data/requests";
 
 export default function RequestCard({ request }: { request: RequestRow }) {
+  if (!request.id) {
+    return (
+      <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+        This request is missing an id and cannot be opened.
+      </div>
+    );
+  }
+
   return (
     <Link
       href={`/requests/${request.id}`}

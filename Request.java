@@ -41,6 +41,11 @@ public class Request {
 
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
+        Requests.updateRequests(this);
 	}
+
+    public User getRequester() {
+        return requester;
+    }  
 
 }

@@ -14,7 +14,7 @@ public class User {
 		this.userName = userName;
 		this.requestsMade = 0;
 		this.requestsHelped = 0;
-		this.currentRequests = new Request[10];
+		this.currentRequests = new Request[5];
 		this.password = password;
 	}
 
@@ -26,24 +26,20 @@ public class User {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
 	public int getRequestsMade() {
 		return requestsMade;
 	}
 
-	public void setRequestsMade(int requestsMade) {
-		this.requestsMade = requestsMade;
+	public void incrementRequestsMade() {
+		this.requestsMade = requestsMade + 1;
 	}
 
 	public int getRequestsHelped() {
 		return requestsHelped;
 	}
 
-	public void setRequestsHelped(int requestsHelped) {
-		this.requestsHelped = requestsHelped;
+	public void incrementRequestsHelped() {
+		this.requestsHelped = requestsHelped + 1;
 	}
 
 	public Request[] getCurrentRequests() {
@@ -55,9 +51,6 @@ public class User {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
 	public Request addRequest() {
 		java.util.Scanner scanner = new java.util.Scanner(System.in);

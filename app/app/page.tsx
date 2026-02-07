@@ -23,7 +23,7 @@ export default function LandingPage() {
               Live now
             </p>
             <p className="mt-2 text-lg font-semibold">
-              "Need help changing a tire near campus"
+              &ldquo;Need help changing a tire near campus&rdquo;
             </p>
             <p className="mt-2 text-sm text-white/70">
               Claimed in 12 minutes · Athens, GA
@@ -34,7 +34,7 @@ export default function LandingPage() {
               Thank you note
             </p>
             <p className="mt-2 text-lg font-semibold">
-              "Shoutout to Maya for fixing our porch light"
+              &ldquo;Shoutout to Maya for fixing our porch light&rdquo;
             </p>
             <p className="mt-2 text-sm text-white/70">
               Posted today

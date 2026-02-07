@@ -118,6 +118,7 @@ export default function RequestDetail({ id }: { id?: string }) {
       return;
     }
     router.push("/requests");
+    router.refresh();
   }
 
   async function handleSaveEdit() {
@@ -133,10 +134,13 @@ export default function RequestDetail({ id }: { id?: string }) {
       return;
     }
     setEditing(false);
-    const refreshed = await fetchRequestById(request.id);
-    if (!refreshed.error) {
-      setRequest(refreshed.data as RequestRow);
-    }
+    setRequest({
+      ...request,
+      title: editTitle,
+      description: editDescription,
+      category: editCategory || null,
+      location: editLocation || null,
+    });
   }
 
   async function handleMarkCompleted() {
@@ -147,6 +151,7 @@ export default function RequestDetail({ id }: { id?: string }) {
       return;
     }
     setRequest({ ...request, status: "completed" });
+    router.refresh();
   }
 
   if (loading) {

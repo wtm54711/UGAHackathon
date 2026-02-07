@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { ThanksPost, fetchThanksById } from "@/lib/data/thanks";
 import EmptyState from "@/components/EmptyState";
 
-export default function ThanksDetail({ id }: { id: string }) {
+export default function ThanksDetail({ id }: { id?: string }) {
+  const params = useParams();
+  const resolvedId = id ?? (params?.id as string | undefined);
   const [post, setPost] = useState<ThanksPost | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -14,8 +17,14 @@ export default function ThanksDetail({ id }: { id: string }) {
     let active = true;
 
     async function load() {
+      if (!resolvedId) {
+        setError("Missing thanks post id.");
+        setPost(null);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
-      const { data, error } = await fetchThanksById(id);
+      const { data, error } = await fetchThanksById(resolvedId);
       if (!active) return;
       if (error) {
         setError(error.message);
@@ -30,7 +39,7 @@ export default function ThanksDetail({ id }: { id: string }) {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [resolvedId]);
 
   if (loading) {
     return <p className="text-sm text-slate-500">Loading post...</p>;
@@ -40,7 +49,7 @@ export default function ThanksDetail({ id }: { id: string }) {
     return (
       <EmptyState
         title="Post not found"
-        description="This thanks post may have been removed."
+        description={`This thanks post may have been removed. Post id: ${resolvedId ?? "missing"}`}
         action={
           <Link
             href="/thanks"
@@ -75,9 +84,12 @@ export default function ThanksDetail({ id }: { id: string }) {
       </div>
 
       {error && (
-        <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {error}
-        </p>
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p>{error}</p>
+          <p className="mt-1 text-xs text-rose-600">
+            Post id: {resolvedId ?? "missing"}
+          </p>
+        </div>
       )}
     </div>
   );

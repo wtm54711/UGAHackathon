@@ -4,7 +4,7 @@ export type RequestStatus = "open" | "claimed" | "completed";
 
 export type RequestRow = {
   id: string;
-  user_id: string;
+  user_id?: string | null;
   title: string;
   description: string;
   category: string | null;
@@ -29,7 +29,7 @@ export async function fetchRequests(params: {
   const supabase = createBrowserClient();
   let query = supabase
     .from("requests")
-    .select("id,user_id,title,description,category,status,created_at,location")
+    .select("*")
     .order("created_at", { ascending: params.sort === "oldest" });
 
   if (params.search) {
@@ -49,9 +49,9 @@ export async function fetchRequestById(id: string) {
   const supabase = createBrowserClient();
   return supabase
     .from("requests")
-    .select("id,user_id,title,description,category,status,created_at,location")
+    .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 }
 
 export async function createRequest(payload: {

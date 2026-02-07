@@ -278,4 +278,163 @@ public class Requests {
         
         return results.toArray(new Request[0]);
     }
+
+    // Get all requests with specific title (both incomplete and complete)
+    public static Request[] getRequestsByTitle(String title) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = incompleteHead;
+        while (current != null) {
+            if (current.request.getTitle().equals(title)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        current = completeHead;
+        while (current != null) {
+            if (current.request.getTitle().equals(title)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get incomplete requests with specific title
+    public static Request[] getIncompleteRequestsByTitle(String title) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = incompleteHead;
+        while (current != null) {
+            if (current.request.getTitle().equals(title)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get complete requests with specific title
+    public static Request[] getCompleteRequestsByTitle(String title) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = completeHead;
+        while (current != null) {
+            if (current.request.getTitle().equals(title)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get all requests with specific category (both incomplete and complete)
+    public static Request[] getRequestsByCategory(String category) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = incompleteHead;
+        while (current != null) {
+            if (current.request.getCategory().equals(category)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        current = completeHead;
+        while (current != null) {
+            if (current.request.getCategory().equals(category)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get incomplete requests with specific category
+    public static Request[] getIncompleteRequestsByCategory(String category) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = incompleteHead;
+        while (current != null) {
+            if (current.request.getCategory().equals(category)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get complete requests with specific category
+    public static Request[] getCompleteRequestsByCategory(String category) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = completeHead;
+        while (current != null) {
+            if (current.request.getCategory().equals(category)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get all requests with specific contact preference (both incomplete and complete)
+    public static Request[] getRequestsByContactPreference(String contactPreference) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = incompleteHead;
+        while (current != null) {
+            if (current.request.getContactPreference().equals(contactPreference)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        current = completeHead;
+        while (current != null) {
+            if (current.request.getContactPreference().equals(contactPreference)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get incomplete requests with specific contact preference
+    public static Request[] getIncompleteRequestsByContactPreference(String contactPreference) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = incompleteHead;
+        while (current != null) {
+            if (current.request.getContactPreference().equals(contactPreference)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
+
+    // Get complete requests with specific contact preference
+    public static Request[] getCompleteRequestsByContactPreference(String contactPreference) {
+        java.util.List<Request> results = new java.util.ArrayList<>();
+        
+        Node current = completeHead;
+        while (current != null) {
+            if (current.request.getContactPreference().equals(contactPreference)) {
+                results.add(current.request);
+            }
+            current = current.next;
+        }
+        
+        return results.toArray(new Request[0]);
+    }
 }

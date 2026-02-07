@@ -53,35 +53,42 @@ public class User {
 
 
 	public Request addRequest() {
-		java.util.Scanner scanner = new java.util.Scanner(System.in);
-		System.out.print("description: ");
-		String desc = scanner.nextLine();
-		int diff = 0;
-		while (true) {
-			System.out.print("difficulty (int): ");
-			String line = scanner.nextLine();
-			if (line == null) return null;
-			line = line.trim();
-			if (line.isEmpty()) continue;
-			try {
-				diff = Integer.parseInt(line);
-				break;
-			} catch (NumberFormatException ex) {
-				System.out.println("Invalid number. Enter an integer.");
-			}
-		}
-		System.out.print("location: ");
-		String loc = scanner.nextLine();
-		if (this.currentRequests[9] != null) {
-			System.out.println("Cannot add more requests, maximum reached.");
-			return null;
-		}
-		int index = 0;
-		while (index < 10 && this.currentRequests[index] != null) {
-			index++;
-		}
-		this.currentRequests[index] = new Request(this, desc, diff, loc);
-		return this.currentRequests[index];
+		try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
+            System.out.print("description: ");
+            String desc = scanner.nextLine();
+            int diff = 0;
+            while (true) {
+            	System.out.print("difficulty (int): ");
+            	String line = scanner.nextLine();
+            	if (line == null) return null;
+            	line = line.trim();
+            	if (line.isEmpty()) continue;
+            	try {
+            		diff = Integer.parseInt(line);
+            		break;
+            	} catch (NumberFormatException ex) {
+            		System.out.println("Invalid number. Enter an integer.");
+            	}
+            }
+            System.out.print("location: ");
+            String loc = scanner.nextLine();
+            System.out.print("title: ");
+            String title = scanner.nextLine();
+            System.out.print("contact preference: ");
+            String contactPref = scanner.nextLine();
+            System.out.print("category: ");
+            String category = scanner.nextLine();
+            if (this.currentRequests[9] != null) {
+            	System.out.println("Cannot add more requests, maximum reached.");
+            	return null;
+            }
+            int index = 0;
+            while (index < 10 && this.currentRequests[index] != null) {
+            	index++;
+            }
+            this.currentRequests[index] = new Request(this, desc, diff, loc, title, contactPref, category);
+            return this.currentRequests[index];
+        }
 	}
 
 

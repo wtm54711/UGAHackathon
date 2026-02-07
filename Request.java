@@ -6,8 +6,12 @@ public class Request {
 	private String location;
 	private boolean completed;
     private User requester;
+    private String title;
+    private String ContactPreference;
+    private String category;
 
-	public Request(User requester,String requestDescription, int requestDifficulty, String location) {
+	public Request(User requester,String requestDescription, int requestDifficulty, String location, String title, String ContactPreference, String category 
+    ) {
 		if (requestDifficulty < 1 || requestDifficulty > 5) {
 			throw new IllegalArgumentException("requestDifficulty must be between 1 and 5");
 		}
@@ -17,6 +21,9 @@ public class Request {
 		this.location = location;
 		this.completed = false;
         this.requester = requester;
+        this.title = title;
+        this.ContactPreference = ContactPreference; 
+        this.category = category;
 	}
 
 	public int getRequestId() {
@@ -46,6 +53,18 @@ public class Request {
 
     public User getRequester() {
         return requester;
-    }  
+    }
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getContactPreference() {
+		return ContactPreference;
+	}
+
+	public String getCategory() {
+		return category;
+	}
 
 }

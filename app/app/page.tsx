@@ -6,7 +6,7 @@ export default function LandingPage() {
       <div className="grid gap-10 rounded-3xl border border-slate-200 bg-white p-10 shadow-sm md:grid-cols-[1.3fr_1fr]">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">
-            Athens Helper
+            Whos there?
           </p>
           <h1 className="mt-4 font-[var(--font-display)] text-4xl leading-tight text-slate-900 md:text-5xl">
             Help your neighbors in Athens

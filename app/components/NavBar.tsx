@@ -40,7 +40,7 @@ export default function NavBar() {
     <nav className="border-b border-slate-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="text-lg font-semibold text-slate-900">
-          Athens Helper
+          Whos There?
         </Link>
         <div className="flex items-center gap-6 text-sm text-slate-600">
           <Link href="/requests" className="hover:text-slate-900">

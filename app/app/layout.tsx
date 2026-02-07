@@ -14,7 +14,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Athens Helper",
+  title: "Whos There?",
   description: "Help your neighbors in Athens with quick community requests.",
 };
 

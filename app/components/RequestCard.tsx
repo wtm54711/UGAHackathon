@@ -1,0 +1,28 @@
+import Link from "next/link";
+import CategoryBadge from "@/components/CategoryBadge";
+import StatusPill from "@/components/StatusPill";
+import { RequestRow } from "@/lib/data/requests";
+
+export default function RequestCard({ request }: { request: RequestRow }) {
+  return (
+    <Link
+      href={`/requests/${request.id}`}
+      className="rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-slate-300"
+    >
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-slate-900">
+          {request.title}
+        </h3>
+        <StatusPill status={request.status} />
+      </div>
+      <p className="mt-2 text-sm text-slate-600">
+        {request.description}
+      </p>
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+        <CategoryBadge category={request.category} />
+        <span>{request.location ?? "Athens, GA"}</span>
+        <span>{new Date(request.created_at).toLocaleDateString()}</span>
+      </div>
+    </Link>
+  );
+}

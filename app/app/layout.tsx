@@ -33,7 +33,6 @@ export default function RootLayout({
         <footer className="border-t border-white/70 bg-white/70 backdrop-blur">
           <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-slate-500">
             <span>Built for Athens. Powered by neighbors.</span>
-            <span>State Farm Community Track Hackathon MVP.</span>
           </div>
         </footer>
       </body>

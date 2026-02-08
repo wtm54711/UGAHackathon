@@ -16,6 +16,7 @@ import {
   updateRequest,
   updateRequestStatus,
 } from "@/lib/data/requests";
+import { fetchProfilesByIds, ProfileRow } from "@/lib/data/profiles";
 import { createBrowserClient } from "@/lib/supabase/client";
 
 export default function RequestDetail({ id }: { id?: string }) {
@@ -32,11 +33,38 @@ export default function RequestDetail({ id }: { id?: string }) {
   const [editDescription, setEditDescription] = useState("");
   const [editCategory, setEditCategory] = useState("");
   const [editLocation, setEditLocation] = useState("");
+  const [profilesById, setProfilesById] = useState<
+    Record<string, ProfileRow>
+  >({});
   const router = useRouter();
 
   useEffect(() => {
     let active = true;
     const supabase = createBrowserClient();
+
+    async function loadProfilesForComments(
+      currentRequest: RequestRow | null,
+      currentComments: RequestComment[]
+    ) {
+      const profileIds = new Set<string>();
+      if (currentRequest?.user_id) profileIds.add(currentRequest.user_id);
+      currentComments.forEach((comment) => {
+        if (comment.user_id) profileIds.add(comment.user_id);
+      });
+
+      if (profileIds.size === 0) return;
+
+      const profilesResult = await fetchProfilesByIds(
+        Array.from(profileIds)
+      );
+      if (!profilesResult.error && profilesResult.data) {
+        const profileMap: Record<string, ProfileRow> = {};
+        (profilesResult.data as ProfileRow[]).forEach((profile) => {
+          profileMap[profile.id] = profile;
+        });
+        if (active) setProfilesById(profileMap);
+      }
+    }
 
     async function loadUser() {
       const { data } = await supabase.auth.getUser();
@@ -71,11 +99,15 @@ export default function RequestDetail({ id }: { id?: string }) {
       const commentsResult = await fetchRequestComments(resolvedId);
       if (!active) return;
 
+      let nextComments: RequestComment[] = [];
       if (commentsResult.error) {
         setComments([]);
       } else {
-        setComments((commentsResult.data as RequestComment[]) || []);
+        nextComments = (commentsResult.data as RequestComment[]) || [];
+        setComments(nextComments);
       }
+
+      await loadProfilesForComments(data as RequestRow | null, nextComments);
 
       setLoading(false);
     }
@@ -106,7 +138,26 @@ export default function RequestDetail({ id }: { id?: string }) {
     setCommentText("");
     const refreshed = await fetchRequestComments(resolvedId);
     if (!refreshed.error) {
-      setComments((refreshed.data as RequestComment[]) || []);
+      const nextComments = (refreshed.data as RequestComment[]) || [];
+      setComments(nextComments);
+      await (async () => {
+        const profileIds = new Set<string>();
+        if (request?.user_id) profileIds.add(request.user_id);
+        nextComments.forEach((comment) => {
+          if (comment.user_id) profileIds.add(comment.user_id);
+        });
+        if (profileIds.size === 0) return;
+        const profilesResult = await fetchProfilesByIds(
+          Array.from(profileIds)
+        );
+        if (!profilesResult.error && profilesResult.data) {
+          const profileMap: Record<string, ProfileRow> = {};
+          (profilesResult.data as ProfileRow[]).forEach((profile) => {
+            profileMap[profile.id] = profile;
+          });
+          setProfilesById(profileMap);
+        }
+      })();
     }
   }
 
@@ -178,7 +229,8 @@ export default function RequestDetail({ id }: { id?: string }) {
   const ownerId = request.user_id ?? null;
   const isOwner = userId !== null && userId === ownerId;
   const locationLabel = request.location ?? "Athens, GA";
-  const authorLabel = ownerId ?? "unknown";
+  const ownerProfile = ownerId ? profilesById[ownerId] : null;
+  const authorLabel = ownerProfile?.display_name ?? ownerId ?? "unknown";
 
   return (
     <div className="space-y-8">
@@ -196,7 +248,14 @@ export default function RequestDetail({ id }: { id?: string }) {
             </h1>
           </div>
           <div className="text-xs text-slate-500">
-            Posted by {authorLabel}
+            Posted by{" "}
+            {ownerId ? (
+              <Link className="underline" href={`/profile/${ownerId}`}>
+                {authorLabel}
+              </Link>
+            ) : (
+              authorLabel
+            )}
           </div>
         </div>
 
@@ -293,18 +352,28 @@ export default function RequestDetail({ id }: { id?: string }) {
           </p>
         ) : (
           <div className="mt-4 space-y-3">
-            {comments.map((comment) => (
-              <div
-                key={comment.id}
-                className="rounded-2xl border border-slate-100 bg-slate-50 p-3"
-              >
-                <p className="text-sm text-slate-700">{comment.body}</p>
-                <p className="mt-2 text-xs text-slate-500">
-                  {comment.user_id} ·{" "}
-                  {new Date(comment.created_at).toLocaleString()}
-                </p>
-              </div>
-            ))}
+            {comments.map((comment) => {
+              const profile = profilesById[comment.user_id];
+              const commentAuthor =
+                profile?.display_name ?? comment.user_id;
+              return (
+                <div
+                  key={comment.id}
+                  className="rounded-2xl border border-slate-100 bg-slate-50 p-3"
+                >
+                  <p className="text-sm text-slate-700">{comment.body}</p>
+                  <p className="mt-2 text-xs text-slate-500">
+                    <Link
+                      className="underline"
+                      href={`/profile/${comment.user_id}`}
+                    >
+                      {commentAuthor}
+                    </Link>{" "}
+                    - {new Date(comment.created_at).toLocaleString()}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -338,3 +407,4 @@ export default function RequestDetail({ id }: { id?: string }) {
     </div>
   );
 }
+

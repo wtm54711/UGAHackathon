@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
+import CursorSparkles from "@/components/CursorSparkles";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${manrope.variable}`}>
       <body className="min-h-screen font-[var(--font-sans)] antialiased">
+        <CursorSparkles />
         <NavBar />
         <main className="min-h-[calc(100vh-140px)]">{children}</main>
         <footer className="border-t border-white/70 bg-white/70 backdrop-blur">

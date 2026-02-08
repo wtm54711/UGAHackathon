@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { upsertProfile } from "@/lib/data/profiles";
 
 type Mode = "login" | "signup";
 
@@ -37,8 +38,20 @@ export default function AuthForm() {
       return;
     }
 
+    if (mode === "signup") {
+      const userId = result.data.user?.id;
+      if (userId) {
+        await upsertProfile({
+          id: userId,
+          display_name: null,
+          bio: null,
+          location: null,
+        });
+      }
+    }
+
     setLoading(false);
-    router.push("/requests");
+    router.push(mode === "signup" ? "/profile" : "/requests");
   }
 
   return (

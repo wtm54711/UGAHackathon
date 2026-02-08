@@ -28,6 +28,11 @@ export default function RequestCard({ request }: { request: RequestRow }) {
         <CategoryBadge category={request.category} />
         <span>{request.location ?? "Athens, GA"}</span>
         <span>{new Date(request.created_at).toLocaleDateString()}</span>
+        {request.deadline_at && (
+          <span>
+            Deadline: {new Date(request.deadline_at).toLocaleDateString()}
+          </span>
+        )}
       </div>
     </Link>
   );

@@ -64,6 +64,12 @@ export default function NavBar() {
           >
             Thanks
           </Link>
+          <Link
+            href="/schedule"
+            className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:text-slate-900 hover:shadow-md"
+          >
+            Schedule
+          </Link>
           {email && (
             <Link
               href="/profile"

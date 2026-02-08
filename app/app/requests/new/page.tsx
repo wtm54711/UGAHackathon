@@ -15,6 +15,7 @@ export default function NewRequestPage() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Home");
   const [location, setLocation] = useState("Athens, GA");
+  const [deadline, setDeadline] = useState("");
   const [contactPreference, setContactPreference] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,7 @@ export default function NewRequestPage() {
     setError(null);
     setLoading(true);
 
+    const deadlineAt = deadline ? new Date(deadline).toISOString() : null;
     const { data, error } = await createRequest({
       title,
       description,
@@ -53,6 +55,7 @@ export default function NewRequestPage() {
       location,
       user_id: userId,
       contact_preference: contactPreference || null,
+      deadline_at: deadlineAt,
     });
 
     if (error) {
@@ -118,6 +121,14 @@ export default function NewRequestPage() {
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+          />
+        </FormField>
+        <FormField label="Deadline" helper="Optional">
+          <input
+            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            type="datetime-local"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
           />
         </FormField>
         <FormField label="Contact preference" helper="Optional">

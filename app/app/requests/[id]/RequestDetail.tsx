@@ -19,6 +19,20 @@ import {
 import { fetchProfilesByIds, ProfileRow } from "@/lib/data/profiles";
 import { createBrowserClient } from "@/lib/supabase/client";
 
+const categories = ["Home", "Car", "Yard", "Tech", "Other"];
+
+function toLocalInputValue(isoString: string) {
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (value: number) => value.toString().padStart(2, "0");
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 export default function RequestDetail({ id }: { id?: string }) {
   const params = useParams();
   const resolvedId = id ?? (params?.id as string | undefined);
@@ -33,6 +47,7 @@ export default function RequestDetail({ id }: { id?: string }) {
   const [editDescription, setEditDescription] = useState("");
   const [editCategory, setEditCategory] = useState("");
   const [editLocation, setEditLocation] = useState("");
+  const [editDeadline, setEditDeadline] = useState("");
   const [profilesById, setProfilesById] = useState<
     Record<string, ProfileRow>
   >({});
@@ -94,6 +109,9 @@ export default function RequestDetail({ id }: { id?: string }) {
         setEditDescription(req.description);
         setEditCategory(req.category ?? "");
         setEditLocation(req.location ?? "");
+        setEditDeadline(
+          req.deadline_at ? toLocalInputValue(req.deadline_at) : ""
+        );
       }
 
       const commentsResult = await fetchRequestComments(resolvedId);
@@ -177,8 +195,9 @@ export default function RequestDetail({ id }: { id?: string }) {
     const { error } = await updateRequest(request.id, {
       title: editTitle,
       description: editDescription,
-      category: editCategory,
+      category: editCategory || null,
       location: editLocation || null,
+      deadline_at: editDeadline ? new Date(editDeadline).toISOString() : null,
     });
     if (error) {
       setError(error.message);
@@ -191,6 +210,9 @@ export default function RequestDetail({ id }: { id?: string }) {
       description: editDescription,
       category: editCategory || null,
       location: editLocation || null,
+      deadline_at: editDeadline
+        ? new Date(editDeadline).toISOString()
+        : null,
     });
   }
 
@@ -242,6 +264,12 @@ export default function RequestDetail({ id }: { id?: string }) {
               <StatusPill status={request.status} />
               <span>{locationLabel}</span>
               <span>{new Date(request.created_at).toLocaleDateString()}</span>
+              {request.deadline_at && (
+                <span>
+                  Deadline:{" "}
+                  {new Date(request.deadline_at).toLocaleString()}
+                </span>
+              )}
             </div>
             <h1 className="text-2xl font-semibold text-slate-900">
               {request.title}
@@ -272,15 +300,28 @@ export default function RequestDetail({ id }: { id?: string }) {
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
             />
-            <input
+            <select
               className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
               value={editCategory}
               onChange={(e) => setEditCategory(e.target.value)}
-            />
+            >
+              <option value="">No category</option>
+              {categories.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
             <input
               className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
               value={editLocation}
               onChange={(e) => setEditLocation(e.target.value)}
+            />
+            <input
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+              type="datetime-local"
+              value={editDeadline}
+              onChange={(e) => setEditDeadline(e.target.value)}
             />
             <div className="flex flex-wrap gap-3">
               <button

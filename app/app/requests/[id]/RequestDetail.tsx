@@ -154,6 +154,17 @@ export default function RequestDetail({ id }: { id?: string }) {
     router.refresh();
   }
 
+  async function handleMarkInProgress() {
+    if (!request) return;
+    const { error } = await updateRequestStatus(request.id, "in_progress");
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setRequest({ ...request, status: "in_progress" });
+    router.refresh();
+  }
+
   if (loading) {
     return <p className="text-sm text-slate-500">Loading request...</p>;
   }
@@ -258,6 +269,12 @@ export default function RequestDetail({ id }: { id?: string }) {
                 onClick={() => setEditing(true)}
               >
                 Edit
+              </button>
+              <button
+                className="rounded-full border border-slate-200 px-4 py-2 text-sm"
+                onClick={handleMarkInProgress}
+              >
+                Mark In Progress
               </button>
               <button
                 className="rounded-full border border-rose-200 px-4 py-2 text-sm text-rose-600"

@@ -1,6 +1,6 @@
 import { createBrowserClient } from "@/lib/supabase/client";
 
-export type RequestStatus = "open" | "claimed" | "completed";
+export type RequestStatus = "open" | "claimed" | "in_progress" | "completed";
 
 export type RequestRow = {
   id: string;
